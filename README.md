@@ -1,0 +1,1 @@
+# paradigmaLogico2024
