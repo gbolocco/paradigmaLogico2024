@@ -102,12 +102,12 @@ saludable(plato(_,principal(Guarnicion,MinutosDeCoccion))):-
     CaloriasTotales is 5 * MinutosDeCoccion + CaloriasExtras,
     CaloriasTotales < 75.
 
+saludable(plato(_,postre(Calorias))):-
+    Calorias < 75.
+
 caloriasSegunGuarnicion(pure,20).
 caloriasSegunGuarnicion(papasFritas,50).
 caloriasSegunGuarnicion(ensalada,0).
-
-saludable(plato(_,postre(Calorias))):-
-    Calorias < 75.
 
 % Se puede extraer logica de estos predicados, pero la resolucion no me quedo muy clara.
 
@@ -123,4 +123,45 @@ restaurante es especialista en aquellos platos que todos sus chefs saben cocinar
 ● cormillot requiere que todos los platos que saben cocinar los empleados del restaurante sean
 saludables y que a ninguna entrada le falte zanahoria.
 ● gordonRamsay no le da una crítica positiva a ningún restaurante.
+*/
+
+critico(gordonRamsay).
+critico(cormillot).
+critico(antonEgo).
+critico(christophe).
+
+
+criticaPositiva(Critico,Restaurante):-
+    critico(Critico),
+    inspeccionSatisfactoria(Restaurante),
+    criticaPositivaSegun(Critico,Restaurante),
+    Critico \= gordonRamsey.
+
+criticaPositivaSegun(antonEgo,Restaurante):-
+    forall(trabajaEn(Restaurante,Empleado),cocinaBien(Empleado,ratatouille)).
+
+criticaPositivaSegun(christophe,Restaurante):-
+    findall(Empleado,trabajaEn(Restaurante,Empleado),Empleados),
+    length(Empleados,CantidadDeEmpleados),
+    CantidadDeEmpleados > 3.
+
+criticaPositivaSegun(christophe,Restaurante):-
+    trabajaEn(Restaurante,Empleado1),
+    trabajaEn(Restaurante,Empleado2),
+    trabajaEn(Restaurante,Empleado3),
+    Empleado1 \= Empleado2,
+    Empleado2 \= Empleado3. % !!!
+
+criticaPositivaSegun(cormillot,Restaurante):-
+    forall((trabajaEn(Restaurante,Empleado),cocina(Empleado,Plato,_)),saludable(Plato)).
+    forall((trabajaEn(Restaurante,Empleado),cocina(Empleado,plato(_,entrada(Ingredientes)),_)), tieneZanahoria(Ingredientes)).
+
+tieneZanahoria(Ingredientes):-
+    member(zanahoria,Ingredientes).
+
+/*
+forall (_, saludableOZanahoria(plato).
+ saludableOZanahoria(plato) :-
+           saludable(plato).
+ saludableOZanahoria(entrada(...)) :-
 */
